@@ -3,9 +3,11 @@ use std::{
     env,
     fs,
     io::prelude::*,
+    path::Path,
 }; 
 
 use scraper::{Html, Selector};
+use chrono::prelude::*;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -16,23 +18,32 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             std::process::exit(1);
        });
 
-       //let cloned_url = url.clone();
        let parsed_url = url::Url::parse(&url)?;
-       let domain = parsed_url.domain().unwrap_or("unknown_domain");
+       let domain = parsed_url.domain().unwrap_or("unknown domain");
 
-       
-       fs::create_dir_all(domain)?;
+       let sanitized_domain = domain.chars().filter(|&c| c.is_ascii_alphanumeric() || c == '-' || c == '.').collect::<String>();
+       let pathified_domain = Path::new(&sanitized_domain);
+       if pathified_domain.exists() {
+           println!("{}: Path {} Already Exits", "WARN".yellow().italic(), domain);
+       } else {
+           fs::create_dir_all(sanitized_domain.clone())?;
+       }
+
+       let utc: DateTime<Utc> = Utc::now();
+       let formatted_utc = utc.format("%Y-%m-%dT%H%M%S%.f").to_string();
+       let current_path = format!("{}/{}", sanitized_domain, formatted_utc);
+       fs::create_dir(current_path.clone())?;
        
        println!("{}: Started to process: {}", "LOG".yellow().bold(), url.clone());
+       println!("{}", current_path);
 
        let resp = reqwest::get(url).await?;
-       
-        let status = resp.status().to_string();
-        let code:Option<&str> = status.split_whitespace().next();
-        let result = match code {
-            Some(code) => code.to_string(),
-            None => String::from("Unknown"),
-        };
+       let status = resp.status().to_string();
+       let code:Option<&str> = status.split_whitespace().next();
+       let result = match code {
+          Some(code) => code.to_string(),
+          None => String::from("Unknown"),
+       };
         
        if !resp.status().is_success() {
            println!("{}: Response was not succesfull: {}", "Error".red(), result);
@@ -51,10 +62,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
        }
 
-       let anchors_path = format!("{}/{}", domain, "anchors.txt");
-       let html_path = format!("{}/{}", domain, "output.html");
-       let anchors = fs::File::create(anchors_path);
-       let html = fs::File::create(html_path);
+       let anchors_path = format!("{}/{}", current_path, "anchors.txt");
+       let html_path = format!("{}/{}", current_path, "output.html");
+       let anchors = fs::File::create(anchors_path.clone());
+       let html = fs::File::create(html_path.clone());
+
+       println!("{}", anchors_path.clone());
+       println!("{}", html_path.clone());
 
        let anchor_content: String = anchor_links.into_iter().map(|x| x.to_string()).collect();
 

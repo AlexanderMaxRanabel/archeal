@@ -11,3 +11,4 @@ tokio = { version = "1", features = ["full"] }
 colored = "*"
 scraper = "0.18.1"
 url = "2.4.1"
+chrono = "0.4.31"
