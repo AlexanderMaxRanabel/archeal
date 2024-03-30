@@ -1,0 +1,15 @@
+[package]
+name = "archeal"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+colored = "2.1.0"
+reqwest = { version = "0.12.2", features = ["json"] }
+tokio = { version = "1.37", features = ["full"] }
+chrono = "0.4.37"
+anyhow = "1.0.81"
+url = "2.5.0"
+scraper = "0.18.1"
