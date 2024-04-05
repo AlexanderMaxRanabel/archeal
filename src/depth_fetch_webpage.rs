@@ -7,17 +7,28 @@ pub async fn depth_fetch_page(html_body: String, current_path: String, url: Stri
     let parsed_url = url::Url::parse(&url)?;
     let document = Html::parse_document(&html_body);
 
-    let mut anchor_links: Vec<&str> = Vec::new();
+    let mut unordered_anchor_links: Vec<&str> = Vec::new();
+    let mut anchor_links: Vec<String> = Vec::new();
 
     let anchor_selector = Selector::parse("a").unwrap();
 
     for link in document.select(&anchor_selector) {
         if let Some(href) = link.value().attr("href") {
-            anchor_links.push(href);
+            unordered_anchor_links.push(href);
+        }
+    }
+
+    for sublink in unordered_anchor_links {
+        if sublink.starts_with("https://") || sublink.starts_with("http://") {
+            anchor_links.push(sublink.to_string());
+        } else {
+            let new_sublink = format!("{}{}", &url, sublink);
+            anchor_links.push(new_sublink);
         }
     }
 
     for sublink in anchor_links {
+        println!("{}", sublink);
         let sublink_html_body = fetch_webpage::fetch_page(sublink.to_string()).await?;
 
         let sublink_parsed_url = url::Url::parse(&sublink)?;
