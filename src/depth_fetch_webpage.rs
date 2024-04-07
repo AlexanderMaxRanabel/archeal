@@ -13,7 +13,6 @@ pub async fn depth_fetch_page(
     anchor_links = order_weblinks::order_possible_links(anchor_links, html_body.clone(), url.clone()).await?;
 
     for sublink in anchor_links {
-        println!("{}", sublink);
         let sublink_html_body = fetch_webpage::fetch_page(sublink.to_string()).await?;
 
         let sublink_parsed_url = url::Url::parse(&sublink)?;
