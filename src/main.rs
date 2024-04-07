@@ -1,6 +1,7 @@
 mod archive_page;
 mod depth_fetch_webpage;
 mod fetch_webpage;
+mod order_weblinks;
 mod parse;
 
 use std::env;
