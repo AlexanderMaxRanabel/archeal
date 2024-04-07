@@ -1,9 +1,13 @@
+use crate::{fetch_webpage, order_links};
 use std::{fs, io::prelude::*};
-use crate::{fetch_webpage};
 
 use scraper::{Html, Selector};
 
-pub async fn depth_fetch_page(html_body: String, current_path: String, url: String) -> anyhow::Result<()> {
+pub async fn depth_fetch_page(
+    html_body: String,
+    current_path: String,
+    url: String,
+) -> anyhow::Result<()> {
     let parsed_url = url::Url::parse(&url)?;
     let document = Html::parse_document(&html_body);
 
@@ -22,7 +26,14 @@ pub async fn depth_fetch_page(html_body: String, current_path: String, url: Stri
         if sublink.starts_with("https://") || sublink.starts_with("http://") {
             anchor_links.push(sublink.to_string());
         } else {
-            let new_sublink = format!("{}{}", &url, sublink);
+            let host = parsed_url.host_str();
+            let parts: Vec<&str> = host.expect("Failed the transformation").split('.').collect();
+            let root = if parts.len() >= 2 {
+                format!("{}.{}", parts[parts.len() - 2], parts[parts.len() - 1])
+            } else {
+                host.expect("Failed the transformation").to_string()
+            };
+            let new_sublink = format!("https://{}{}", &root, sublink);
             anchor_links.push(new_sublink);
         }
     }
@@ -56,4 +67,3 @@ pub async fn depth_fetch_page(html_body: String, current_path: String, url: Stri
     }
     Ok(())
 }
-

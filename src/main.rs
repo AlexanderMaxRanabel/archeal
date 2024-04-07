@@ -1,9 +1,9 @@
-mod parse;
 mod archive_page;
-mod fetch_webpage;
 mod depth_fetch_webpage;
+mod fetch_webpage;
+mod parse;
 
-use std::{env};
+use std::env;
 
 use colored::*;
 
@@ -30,7 +30,13 @@ async fn main() -> anyhow::Result<()> {
             }
 
             "True" => {
-                depth_fetch_webpage::depth_fetch_page(html_body.clone(), current_path.clone(), url.clone()).await?;
+                archive_page::archive_page(current_path.clone(), html_body.clone()).await?;
+                depth_fetch_webpage::depth_fetch_page(
+                    html_body.clone(),
+                    current_path.clone(),
+                    url.clone(),
+                )
+                .await?;
             }
 
             _ => {
