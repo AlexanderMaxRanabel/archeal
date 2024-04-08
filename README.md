@@ -8,16 +8,8 @@ The Problem is most of these sites are centrilased and complex to selfhost. Arch
 
 
 
-## Dependincies
+## Dependencies
 - Rust Toolchain. MSRV is 1.73
-- Git
-- Tokio Runtime
-- Reqwest
-- Chrono
-- Colored
-- Scraper
-- url crate
-- anyhow
 - OpenSSL**
 
 ** Only on UNIX-Like systems.
