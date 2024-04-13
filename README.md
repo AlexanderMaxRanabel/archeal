@@ -37,3 +37,6 @@ cargo build --release
 
 ## Licensing
 Archeal is licensed under GNU Affero General Public License 3.0. See LICENSE for more information.
+
+## Donation
+If you want to support my work, i am currently taking donations through my ethereum wallet: 0x72C054C137B8d289807DB6E15665A10e06448424
