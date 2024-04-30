@@ -16,7 +16,7 @@ pub async fn parse_and_create_dir(url: String) -> anyhow::Result<String> {
     let pathified_domain = Path::new(&sanitized_domain);
     if pathified_domain.exists() {
         println!(
-            "{}: Path {} Already Exits, Recording into previously generated directory",
+            "{}: Path {} was previously recorded, Recording into previously generated archive",
             "LOG".yellow().bold(),
             domain
         );
