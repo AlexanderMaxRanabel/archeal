@@ -17,7 +17,6 @@ pub async fn fetch_page(url: String) -> anyhow::Result<String> {
 
     if !resp.status().is_success() {
         println!("{}: Response was not succesfull: {}", "Error".red(), result);
-        std::process::exit(1);
     }
 
     let html_body = resp.text().await?;

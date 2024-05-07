@@ -20,7 +20,7 @@ async fn main() -> anyhow::Result<()> {
         let depth = args.get(4).cloned().unwrap_or_else(|| {
             println!("{}: No depth has been provided", "Error".red().bold());
             std::process::exit(1);
-        });
+        }); 
 
         let current_path = parse::parse_and_create_dir(url.clone()).await?;
         let html_body: String = fetch_webpage::fetch_page(url.clone()).await?;
