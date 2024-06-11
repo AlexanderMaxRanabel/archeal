@@ -28,7 +28,7 @@ pub async fn order_possible_links(mut anchor_links: Vec<String>, html_body: Stri
             } else {
                 host.expect("Failed the transformation").to_string()
             };
-            let new_sublink = format!("https://{}{}", &root, sublink);
+            let new_sublink = format!("https://{}/{}", &root, sublink);
             anchor_links.push(new_sublink);
         }
     }

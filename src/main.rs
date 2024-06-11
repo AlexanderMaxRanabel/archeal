@@ -3,6 +3,7 @@ mod depth_fetch_webpage;
 mod fetch_webpage;
 mod order_weblinks;
 mod parse;
+mod localize_anchor;
 
 use std::env;
 
@@ -23,7 +24,7 @@ async fn main() -> anyhow::Result<()> {
         }); 
 
         let current_path = parse::parse_and_create_dir(url.clone()).await?;
-        let html_body: String = fetch_webpage::fetch_page(url.clone()).await?;
+        let mut html_body: String = fetch_webpage::fetch_page(url.clone()).await?;
 
         match depth.as_str() {
             "False" => {
@@ -31,13 +32,14 @@ async fn main() -> anyhow::Result<()> {
             }
 
             "True" => {
-                archive_page::archive_page(current_path.clone(), html_body.clone()).await?;
-                depth_fetch_webpage::depth_fetch_page(
+                html_body = depth_fetch_webpage::depth_fetch_page(
                     html_body.clone(),
                     current_path.clone(),
                     url.clone(),
                 )
                 .await?;
+
+                archive_page::archive_page(current_path.clone(), html_body.clone()).await?;
             }
 
             _ => {
