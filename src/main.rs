@@ -3,7 +3,6 @@ mod depth_fetch_webpage;
 mod fetch_webpage;
 mod order_weblinks;
 mod parse;
-mod localize_anchor;
 
 use std::env;
 
