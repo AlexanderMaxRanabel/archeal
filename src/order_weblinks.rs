@@ -1,6 +1,10 @@
 use scraper::{Html, Selector};
 
-pub async fn order_possible_links(mut anchor_links: Vec<String>, html_body: String, url: String) -> anyhow::Result<Vec<String>> {
+pub async fn order_possible_links(
+    mut anchor_links: Vec<String>,
+    html_body: String,
+    url: String,
+) -> anyhow::Result<Vec<String>> {
     let parsed_url = url::Url::parse(&url)?;
     let document = Html::parse_document(&html_body);
 
