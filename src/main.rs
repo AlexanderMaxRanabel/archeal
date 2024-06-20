@@ -23,7 +23,7 @@ async fn main() -> anyhow::Result<()> {
             std::process::exit(1);
         });
 
-        let possible_suffixes = [".7z", ".zip", ".rar", ".pdf", ".mp4"];
+        let possible_suffixes = [".7z", ".zip", ".rar", ".pdf", ".mp4", ".mp3", ".waw"];
         let ends_with_any = possible_suffixes
             .iter()
             .any(|&suffix| url.clone().ends_with(suffix));

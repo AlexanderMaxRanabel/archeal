@@ -1,4 +1,5 @@
 use colored::*;
+use reqwest::Client;
 
 pub async fn fetch_page(url: String) -> anyhow::Result<String> {
     println!(
@@ -7,7 +8,9 @@ pub async fn fetch_page(url: String) -> anyhow::Result<String> {
         url.clone()
     );
 
-    let resp = reqwest::get(url.clone()).await?;
+    let client = Client::new();
+    let resp = client.get(url.clone()).send().await?;
+
     let status = resp.status().to_string();
     let code: Option<&str> = status.split_whitespace().next();
     let result = match code {
