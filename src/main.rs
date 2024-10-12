@@ -23,7 +23,17 @@ async fn main() -> anyhow::Result<()> {
             std::process::exit(1);
         });
 
-        let possible_suffixes = [".7z", ".zip", ".rar", ".pdf", ".mp4", ".mp3", ".waw", ".epub", ".c", ".cpp"];
+        let skip_list_path = args.get(6).cloned().unwrap_or_else(|| {
+            println!(
+                "{}: No skip list option has been provied by the user",
+                "Error".red().bold()
+            );
+            std::process::exit(1);
+        });
+
+        let possible_suffixes = [
+            ".7z", ".zip", ".rar", ".pdf", ".mp4", ".mp3", ".waw", ".epub", ".c", ".cpp", ".py",
+        ];
         let ends_with_any = possible_suffixes
             .iter()
             .any(|&suffix| url.clone().ends_with(suffix));
@@ -31,7 +41,7 @@ async fn main() -> anyhow::Result<()> {
         let current_path = parse::parse_and_create_dir(url.clone()).await?;
 
         if ends_with_any {
-            fetch_file::fetch_webfile(url.clone(), current_path.clone()).await?; 
+            fetch_file::fetch_webfile(url.clone(), current_path.clone()).await?;
         } else {
             let html_body = fetch_webpage::fetch_page(url.clone()).await?;
 
@@ -45,6 +55,7 @@ async fn main() -> anyhow::Result<()> {
                         html_body.clone(),
                         current_path.clone(),
                         url.clone(),
+                        skip_list_path.clone(),
                     )
                     .await?;
 
@@ -56,7 +67,6 @@ async fn main() -> anyhow::Result<()> {
                 }
             }
         }
-
     } else {
         println!("{}: Archive it", "Archeal".cyan().italic());
         println!(

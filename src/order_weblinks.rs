@@ -1,9 +1,11 @@
 use scraper::{Html, Selector};
+use colored::*;
 
 pub async fn order_possible_links(
     mut anchor_links: Vec<String>,
     html_body: String,
     url: String,
+    skip_list_path: String,
 ) -> anyhow::Result<Vec<String>> {
     let parsed_url = url::Url::parse(&url)?;
     let document = Html::parse_document(&html_body);
@@ -18,23 +20,27 @@ pub async fn order_possible_links(
         }
     }
 
-    for sublink in unordered_anchor_links {
-        if sublink.starts_with("https://") || sublink.starts_with("http://") {
-            anchor_links.push(sublink.to_string());
-        } else {
-            let host = parsed_url.host_str();
-            let parts: Vec<&str> = host
-                .expect("Failed the transformation")
-                .split('.')
-                .collect();
-            let root = if parts.len() >= 2 {
-                format!("{}.{}", parts[parts.len() - 2], parts[parts.len() - 1])
+    if skip_list_path == "None" {
+        for sublink in unordered_anchor_links {
+            if sublink.starts_with("https://") || sublink.starts_with("http://") {
+                anchor_links.push(sublink.to_string());
             } else {
-                host.expect("Failed the transformation").to_string()
-            };
-            let new_sublink = format!("https://{}/{}", &root, sublink);
-            anchor_links.push(new_sublink);
+                let host = parsed_url.host_str();
+                let parts: Vec<&str> = host
+                    .expect("Failed the transformation")
+                    .split('.')
+                    .collect();
+                let root = if parts.len() >= 2 {
+                    format!("{}.{}", parts[parts.len() - 2], parts[parts.len() - 1])
+                } else {
+                    host.expect("Failed the transformation").to_string()
+                };
+                let new_sublink = format!("https://{}/{}", &root, sublink);
+                anchor_links.push(new_sublink);
+            }
         }
+    } else {
+        println!("{}: A skip list may cause severe performance downgrade", "WARN".yellow().bold());
     }
     Ok(anchor_links)
 }

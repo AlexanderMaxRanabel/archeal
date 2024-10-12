@@ -1,9 +1,6 @@
-use reqwest::Client;
 use colored::*;
-use tokio::{
-    fs::File,
-    io::AsyncWriteExt
-};
+use reqwest::Client;
+use tokio::{fs::File, io::AsyncWriteExt};
 
 fn get_after_last_period(input: &str) -> &str {
     match input.rfind('.') {
@@ -12,7 +9,6 @@ fn get_after_last_period(input: &str) -> &str {
     }
 }
 
-
 pub async fn fetch_webfile(url: String, current_path: String) -> anyhow::Result<()> {
     let client = Client::new();
     let mut response = client.get(url.clone()).send().await?;
@@ -20,7 +16,11 @@ pub async fn fetch_webfile(url: String, current_path: String) -> anyhow::Result<
     let after_period = get_after_last_period(url.as_str());
 
     if !response.status().is_success() {
-        panic!("{}: Failed to download file: {}", "ERROR".red() ,response.status());
+        panic!(
+            "{}: Failed to download file: {}",
+            "ERROR".red(),
+            response.status()
+        );
     }
 
     let file_path_string = format!("{}/main_file.{}", current_path, after_period);
@@ -32,7 +32,11 @@ pub async fn fetch_webfile(url: String, current_path: String) -> anyhow::Result<
         file.write_all(&chunk).await?;
     }
 
-    println!("{}: File downloaded successfully on {}", "LOG".yellow(), file_path_string);
+    println!(
+        "{}: File downloaded successfully on {}",
+        "LOG".yellow(),
+        file_path_string
+    );
 
     Ok(())
 }

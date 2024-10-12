@@ -6,12 +6,18 @@ pub async fn depth_fetch_page(
     html_body: String,
     current_path: String,
     url: String,
+    skip_list_path: String,
 ) -> anyhow::Result<()> {
     let parsed_url = url::Url::parse(&url)?;
 
     let mut anchor_links: Vec<String> = Vec::new();
-    anchor_links =
-        order_weblinks::order_possible_links(anchor_links, html_body.clone(), url.clone()).await?;
+    anchor_links = order_weblinks::order_possible_links(
+        anchor_links,
+        html_body.clone(),
+        url.clone(),
+        skip_list_path.clone(),
+    )
+    .await?;
 
     for sublink in anchor_links {
         let sublink_html_body = fetch_webpage::fetch_page(sublink.to_string()).await?;
