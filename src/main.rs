@@ -33,6 +33,7 @@ async fn main() -> anyhow::Result<()> {
 
         let possible_suffixes = [
             ".7z", ".zip", ".rar", ".pdf", ".mp4", ".mp3", ".waw", ".epub", ".c", ".cpp", ".py",
+            ".flac", ".rs", ".java", ".ml",
         ];
         let ends_with_any = possible_suffixes
             .iter()

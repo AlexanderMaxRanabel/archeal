@@ -1,9 +1,10 @@
-use scraper::{Html, Selector};
 use colored::*;
+use scraper::{Html, Selector};
 use std::{
-    fs::File,
+    fs,
     io::{self, BufRead},
     path::Path,
+    collections::HashSet,
 };
 
 pub async fn order_possible_links(
@@ -46,8 +47,25 @@ pub async fn order_possible_links(
         }
     } else {
         println!("{}: Skip lists, while helping with unwanted archives, can greatly impact the performance of Archeal on large archivals", "WARN".purple());
-        let file = File::open(skip_list_path)?;
-        for sublink in unordered_anchor_links {
+        let mut skip_list_elements: Vec<&str> = Vec::new()
+
+        match fs::read_to_string(skip_list_path) {
+            Ok(contents) => {
+                for line in contents.lines() {
+                    skip_list_elements.push(line);
+                }
+            }
+            Err(e) => eprintln!("Error reading file: {}", e),
+        }
+
+        let set1: HashSet<_> = unordered_anchor_links.into_iter().collect();
+        let set2: HashSet<_> = skip_list_elements.into_iter().collect();
+        let unique_elements: Vec<_> = set1
+            .symmetric_difference(&set2)
+            .cloned()
+            .collect();
+
+        for sublink in unique_elements {
             if sublink.starts_with("https://") || sublink.starts_with("http://") {
                 anchor_links.push(sublink.to_string());
             } else {
@@ -65,7 +83,6 @@ pub async fn order_possible_links(
                 anchor_links.push(new_sublink);
             }
         }
-        println!("{}: A skip list may cause severe performance downgrade", "WARN".yellow().bold());
     }
     Ok(anchor_links)
 }
