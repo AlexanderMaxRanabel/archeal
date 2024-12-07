@@ -1,10 +1,10 @@
 use colored::*;
 use scraper::{Html, Selector};
 use std::{
-    fs,
-    io::{self, BufRead},
-    path::Path,
     collections::HashSet,
+    fs::File,
+    io::{self, BufRead, BufReader},
+    path::Path,
 };
 
 pub async fn order_possible_links(
@@ -47,23 +47,17 @@ pub async fn order_possible_links(
         }
     } else {
         println!("{}: Skip lists, while helping with unwanted archives, can greatly impact the performance of Archeal on large archivals", "WARN".purple());
-        let mut skip_list_elements: Vec<&str> = Vec::new()
+        let mut skip_list_elements: Vec<&str> = Vec::new();
 
-        match fs::read_to_string(skip_list_path) {
-            Ok(contents) => {
-                for line in contents.lines() {
-                    skip_list_elements.push(line);
-                }
-            }
-            Err(e) => eprintln!("Error reading file: {}", e),
+        let file = std::fs::File::open(skip_list_path)?;
+        let reader = BufReader::new(file);
+        for line in reader.lines() {
+            let line = line?;
         }
 
         let set1: HashSet<_> = unordered_anchor_links.into_iter().collect();
         let set2: HashSet<_> = skip_list_elements.into_iter().collect();
-        let unique_elements: Vec<_> = set1
-            .symmetric_difference(&set2)
-            .cloned()
-            .collect();
+        let unique_elements: Vec<_> = set1.symmetric_difference(&set2).cloned().collect();
 
         for sublink in unique_elements {
             if sublink.starts_with("https://") || sublink.starts_with("http://") {
